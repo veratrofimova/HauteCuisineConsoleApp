@@ -8,7 +8,7 @@
         public string Ingredients { get; set; }
         public string Comment { get; set; }
         public bool FlagGarnish { get; set; }
-        public double Calorie { get; set; }
+        public int Calorie { get; set; }
         public int PrefDima { get; set; }
         public int PrefVera { get; set; }
         public int PrefDanya { get; set; }

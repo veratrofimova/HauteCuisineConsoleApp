@@ -1,10 +1,12 @@
-﻿namespace HauteCuisine.BLL.Observer
+﻿using HauteCuisine.Infrastructure.DAL.Database;
+
+namespace HauteCuisine.BLL.Observer
 {
     public class CreateObserver
     {
         public void AddUser()
         {
-            var dishCreateTask = new EventPublisher();
+            var dishCreateTask = new QueryOperation();
             var sender = new EventSubscriber();
             sender.SubcriberTo(dishCreateTask);
 

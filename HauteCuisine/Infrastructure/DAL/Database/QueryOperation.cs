@@ -1,11 +1,18 @@
-﻿using HauteCuisine.DAL.OM;
+﻿using HauteCuisine.BLL.Observer;
+using HauteCuisine.DAL.OM;
 using System.Data;
-using System.Xml.Linq;
 
 namespace HauteCuisine.Infrastructure.DAL.Database
 {
     public class QueryOperation
     {
+        public event Action<string> WhatsForDinner;
+
+        protected void CookingStarted(string text)
+        {
+            WhatsForDinner?.Invoke(text);
+        }
+
         public string InsertSqlQuery(object data)
         {
             const string exceptionText = "Скрипт на добавление строки не создан";
@@ -19,7 +26,7 @@ namespace HauteCuisine.Infrastructure.DAL.Database
                     if (dishInfo == null)
                         throw new Exception(exceptionText);
 
-                    var sql = string.Format(@"insert into ""Сuisine"".""Dish""(""Id"", ""Title"", ""Recipe"", ""Ingredients"", ""Comment"", ""FlagGarnish"", ""Calorie"", ""PrefDima"", ""PrefDanya"", ""PrefVera"", ""PrefEvgen"", ""TimeCooking"")
+                    var sql = string.Format(@"insert into ""Сuisine"".""DishInfo""(""Id"", ""Title"", ""Recipe"", ""Ingredients"", ""Comment"", ""FlagGarnish"", ""Calorie"", ""PrefDima"", ""PrefDanya"", ""PrefVera"", ""PrefEvgen"", ""TimeCooking"")
                 values(nextval('Сuisine.DishInfo_id_seq'), '{0}', '{1}', '{2}', '{3}', {4}, '{5}', '{6}', '{7}', '{8}', '{9}', '{10}')",
                         dishInfo.Title,
                         dishInfo.Recipe,
@@ -48,6 +55,19 @@ namespace HauteCuisine.Infrastructure.DAL.Database
                         dishDone.DateCooking,
                         dishDone.Comment);
 
+                    if (dishDone.DateCooking >= DateTime.Today)
+                    {
+                        QueryOperation queryOperation = new QueryOperation();
+                        string title = queryOperation.GetDishInfoDataById(dishDone.IdDishInfo).Title;
+
+                        var eventPublisher = new EventPublisher();
+
+                        var insertOperation = new QueryOperation();
+                        insertOperation.GetUsersData().ForEach(x =>
+                        {
+                            eventPublisher.UserSubscribe(dishDone, x, title);
+                        });
+                    }
                     return sql;
                 }
                 else
@@ -109,7 +129,7 @@ namespace HauteCuisine.Infrastructure.DAL.Database
                     Ingredients = item.Field<string>("Ingredients"),
                     Comment = item.Field<string>("Comment"),
                     FlagGarnish = item.Field<bool>("FlagGarnish"),
-                    Calorie = item.Field<double>("Calorie"),
+                    Calorie = item.Field<int>("Calorie"),
                     PrefDima = item.Field<int>("PrefDima"),
                     PrefVera = item.Field<int>("PrefVera"),
                     PrefDanya = item.Field<int>("PrefDanya"),

@@ -1,6 +1,6 @@
 ﻿using HauteCuisine.BLL;
+using HauteCuisine.BLL.Observer;
 using HauteCuisine.BLL.Print;
-using HauteCuisine.Controllers;
 using HauteCuisine.DAL.OM;
 using HauteCuisine.Infrastructure.DAL.Database;
 
@@ -8,7 +8,47 @@ namespace HauteCuisine.Infrastructure.UI.ConsoleOperation
 {
     public class ConsoleOperation
     {
-        public void CreateNewDish()
+        public void RunConsole()
+        {
+            Console.WriteLine("Приветствую! Программа предназначение для помощи в выборе блюд на ужин");
+            Console.WriteLine("Введите Ваше имя");
+            string name = Console.ReadLine();
+
+            Console.WriteLine($"{name}, введите /start для старта программы и /exit - для завершения");
+
+            bool exitFlag = true;
+            do
+            {
+                Console.WriteLine("Введите команду: ");
+                string common = Console.ReadLine();
+
+                switch (common)
+                {
+                    case "/start":
+                        Console.WriteLine("/new - Добавить новое блюдо в справочник");
+                        Console.WriteLine("/done - Добавить блюдо, которое приготовлено или только планируется (на дату)");
+                        Console.WriteLine("/view - Рейтинг блюд (по частоте приготовления)");
+                        break;
+                    case "/new":
+                        CreateNewDish();
+                        break;
+                    case "/done":
+                        AddDishToDone();
+                        break;
+                    case "/view":
+                        ViewRatingDishes();
+                        break;
+                    case "/exit":
+                        exitFlag = false;
+                        break;
+                }
+            }
+            while (exitFlag);
+
+            Console.WriteLine("Программа завершена");
+        }
+
+        private void CreateNewDish()
         {
             Console.WriteLine("Введите заголовок:");
             string title = Console.ReadLine();
@@ -38,8 +78,8 @@ namespace HauteCuisine.Infrastructure.UI.ConsoleOperation
             }
 
             Console.WriteLine("Введите калорийность на порцию:");
-            double calorie;
-            bool calorieWellDone = double.TryParse(Console.ReadLine(), out calorie);
+            int calorie;
+            bool calorieWellDone = int.TryParse(Console.ReadLine(), out calorie);
 
             Console.WriteLine("Введите комментарий:");
             string comment = Console.ReadLine();
@@ -66,7 +106,7 @@ namespace HauteCuisine.Infrastructure.UI.ConsoleOperation
             dish.CreateNewDish(dishInfo);
         }
 
-        public void ViewRatingDishes()
+        private void ViewRatingDishes()
         {
             var insertOperation = new QueryOperation();
             List<(string, int)> dishDoneData = insertOperation.GetRatingData();
@@ -75,7 +115,7 @@ namespace HauteCuisine.Infrastructure.UI.ConsoleOperation
             omDishDone.PrintTable(dishDoneData);
         }
 
-        public void AddDishToDone()
+        private void AddDishToDone()
         {
             GetDishInfo();
 
@@ -85,7 +125,7 @@ namespace HauteCuisine.Infrastructure.UI.ConsoleOperation
             Console.WriteLine("Введите дату приготовления (в формате dd.mm.yyyy):");
             DateTime.TryParse(Console.ReadLine(), out DateTime dateCooking);
 
-            Console.WriteLine("При необходиомсти, добавьте комментарий:");
+            Console.WriteLine("При необходимости, добавьте комментарий:");
             string comment = Console.ReadLine();
 
             var done = new DishDoneModel()
@@ -95,11 +135,14 @@ namespace HauteCuisine.Infrastructure.UI.ConsoleOperation
                 Comment = comment,
             };
 
+            CreateObserver createObserver = new CreateObserver();
+            createObserver.AddUser();
+
             var dish = new DishCreateTask();
             dish.AddDishToDone(done);
         }
 
-        public void GetDishInfo()
+        private void GetDishInfo()
         {
             QueryOperation queryOperation = new QueryOperation();
             List<DishInfoModel> dishInfoModels = queryOperation.GetDishInfoData();

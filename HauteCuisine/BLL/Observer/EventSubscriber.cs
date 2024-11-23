@@ -1,8 +1,12 @@
-﻿namespace HauteCuisine.BLL.Observer
+﻿using HauteCuisine.Controllers;
+using HauteCuisine.DAL.OM;
+using HauteCuisine.Infrastructure.DAL.Database;
+
+namespace HauteCuisine.BLL.Observer
 {
     public class EventSubscriber
     {
-        public void SubcriberTo(EventPublisher sender)
+        public void SubcriberTo(QueryOperation sender)
         {
             sender.WhatsForDinner += (text) =>
             {

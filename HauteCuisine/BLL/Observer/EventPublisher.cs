@@ -12,11 +12,8 @@ namespace HauteCuisine.BLL.Observer
             WhatsForDinner?.Invoke(text);
         }
 
-        public void UserSubscribe(DishDoneModel dishDone, string name)
+        public void UserSubscribe(DishDoneModel dishDone, string name, string title)
         {
-            QueryOperation queryOperation = new QueryOperation();
-            string title = queryOperation.GetDishInfoDataById(dishDone.IdDishInfo).Title;
-
             CookingStarted($"{name}, на ужин {dishDone.DateCooking.ToShortDateString()} ожидается {title}");
         }
     }
