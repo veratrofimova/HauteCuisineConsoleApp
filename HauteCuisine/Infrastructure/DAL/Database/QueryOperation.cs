@@ -1,5 +1,4 @@
-﻿using HauteCuisine.BLL.Observer;
-using HauteCuisine.DAL.OM;
+﻿using HauteCuisine.DAL.OM;
 using System.Data;
 
 namespace HauteCuisine.Infrastructure.DAL.Database
@@ -57,15 +56,10 @@ namespace HauteCuisine.Infrastructure.DAL.Database
 
                     if (dishDone.DateCooking >= DateTime.Today)
                     {
-                        QueryOperation queryOperation = new QueryOperation();
-                        string title = queryOperation.GetDishInfoDataById(dishDone.IdDishInfo).Title;
-
-                        var eventPublisher = new EventPublisher();
-
-                        var insertOperation = new QueryOperation();
-                        insertOperation.GetUsersData().ForEach(x =>
+                        string title = GetDishInfoDataById(dishDone.IdDishInfo).Title;
+                        GetUsersData().ForEach(x =>
                         {
-                            eventPublisher.UserSubscribe(dishDone, x, title);
+                            CookingStarted($"{x}, на ужин {dishDone.DateCooking.ToShortDateString()} ожидается {title}");
                         });
                     }
                     return sql;

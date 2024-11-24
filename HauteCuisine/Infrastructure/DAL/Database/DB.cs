@@ -1,4 +1,4 @@
-﻿using HauteCuisine.DAL.OM;
+﻿using HauteCuisine.BLL.Observer;
 using Npgsql;
 using System.Data;
 
@@ -10,31 +10,44 @@ namespace HauteCuisine.Infrastructure.DAL.Database
 
         public DataTable ExecuteScript(string script)
         {
-            var connection = new NpgsqlConnection(connectionString);
-            connection.Open();
-
-            string sql = string.Format(script);
-            using var cmd = new NpgsqlCommand(sql, connection);
-            using NpgsqlDataReader rdr = cmd.ExecuteReader();
-
             DataTable dt = new DataTable();
-            dt.Load(rdr);
+            var connection = new NpgsqlConnection(connectionString);
+            try
+            {
+                connection.Open();
 
-            connection.Close();
+                string sql = string.Format(script);
+                using var cmd = new NpgsqlCommand(sql, connection);
+                using NpgsqlDataReader rdr = cmd.ExecuteReader();
 
-            return dt;
+                dt.Load(rdr);
+
+                return dt;
+            }
+            catch (NpgsqlException ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw;
+            }
+            finally
+            {
+                connection.Close();
+            }
         }
 
         public DataTable SelectData(string fileName)
         {
-            string script = File.ReadAllText($@"C:\Users\kuzne\source\repos\HauteCuisine\HauteCuisine\DAL\Script\{fileName}.sql");
+            string script = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, $@"..\..\..\DAL\Script\{fileName}.sql"));
             return ExecuteScript(script);
         }
 
         public void InsertData(object data)
         {
-            var script = new QueryOperation();
-            string insertSqlQuery = script.InsertSqlQuery(data);
+            QueryOperation queryOperation = new QueryOperation();
+            EventSubscriber eventSubscriber = new EventSubscriber();
+            eventSubscriber.SubcriberTo(queryOperation);
+
+            string insertSqlQuery = queryOperation.InsertSqlQuery(data);
 
             InsertRow(insertSqlQuery);
         }
@@ -47,14 +60,16 @@ namespace HauteCuisine.Infrastructure.DAL.Database
                 connection.Open();
 
                 using var cmd = new NpgsqlCommand(insertIntoData, connection);
-                var cnt = cmd.ExecuteNonQuery().ToString();
+                {
+                    var cnt = cmd.ExecuteNonQuery().ToString();
+                }
 
                 Console.WriteLine("Данные успешно добавлены");
-
             }
             catch (NpgsqlException ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
+                throw;
             }
             finally
             {

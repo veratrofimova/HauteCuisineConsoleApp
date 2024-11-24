@@ -1,6 +1,4 @@
-﻿using HauteCuisine.Controllers;
-using HauteCuisine.DAL.OM;
-using HauteCuisine.Infrastructure.DAL.Database;
+﻿using HauteCuisine.Infrastructure.DAL.Database;
 
 namespace HauteCuisine.BLL.Observer
 {

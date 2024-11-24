@@ -1,5 +1,4 @@
 ﻿using HauteCuisine.BLL;
-using HauteCuisine.BLL.Observer;
 using HauteCuisine.BLL.Print;
 using HauteCuisine.DAL.OM;
 using HauteCuisine.Infrastructure.DAL.Database;
@@ -102,7 +101,7 @@ namespace HauteCuisine.Infrastructure.UI.ConsoleOperation
                 TimeCooking = timeCooking,
             };
 
-            var dish = new DishCreateTask();
+            var dish = new Dish();
             dish.CreateNewDish(dishInfo);
         }
 
@@ -135,10 +134,7 @@ namespace HauteCuisine.Infrastructure.UI.ConsoleOperation
                 Comment = comment,
             };
 
-            CreateObserver createObserver = new CreateObserver();
-            createObserver.AddUser();
-
-            var dish = new DishCreateTask();
+            var dish = new Dish();
             dish.AddDishToDone(done);
         }
 

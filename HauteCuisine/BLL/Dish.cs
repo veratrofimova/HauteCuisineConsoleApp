@@ -3,7 +3,7 @@ using HauteCuisine.DAL.OM;
 
 namespace HauteCuisine.BLL
 {
-    public class DishCreateTask
+    public class Dish
     {
         public void CreateNewDish(DishInfoModel dishInfo)
         {
@@ -19,6 +19,7 @@ namespace HauteCuisine.BLL
 
         public void AddDishToDone(DishDoneModel done)
         {
+
             var cts = new CancellationTokenSource();
             var controller = new TelegramController<DishDoneModel>(cts.Token);
 

@@ -11,6 +11,7 @@
     <Compile Remove="BLL\Create\CheckFabric.cs" />
     <Compile Remove="BLL\Create\ICommonChecker.cs" />
     <Compile Remove="BLL\DishOperation.cs" />
+    <Compile Remove="BLL\User.cs" />
     <Compile Remove="Controllers\UseCase\InsertOparation\None_InsertOparationCommand.cs" />
     <Compile Remove="Controllers\UseCase\InsertOparation\T.cs" />
   </ItemGroup>
